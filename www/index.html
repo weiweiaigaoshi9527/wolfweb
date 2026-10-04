@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>狼人杀 Online · 虚拟主机版</title>
+<link rel="stylesheet" href="www/css/themes.css">
+<link rel="stylesheet" href="www/css/style.css">
+</head>
+<body>
+<div class="shell" id="app-shell">
+  <header class="topbar">
+    <div class="brand">🐺 狼人杀 <small>ONLINE</small></div>
+    <div class="top-spacer"></div>
+    <button class="btn sm" id="btn-theme" title="外观">🎨 外观</button>
+    <div class="userchip hidden" id="userchip" onclick="WW.go('#profile')">
+      <span class="ava" id="chip-ava">🐺</span><span id="chip-name"></span><span class="vip-tag hidden" id="chip-vip">VIP</span>
+    </div>
+    <button class="btn sm" id="btn-logout">退出</button>
+  </header>
+
+  <div class="body-row">
+    <nav class="nav" id="nav">
+      <button class="nav-item" data-route="lobby"><span class="ico">🏰</span>大厅</button>
+      <button class="nav-item" data-route="room" id="nav-room"><span class="ico">🎲</span>房间</button>
+      <button class="nav-item" data-route="game" id="nav-game"><span class="ico">🌙</span>对局</button>
+      <button class="nav-item" data-route="friends" data-feat="duo-friends" id="nav-friends"><span class="ico">👫</span>好友<span class="dot hidden" id="friends-dot"></span></button>
+      <button class="nav-item" data-route="rank" data-feat="rank"><span class="ico">🏆</span>排行榜</button>
+      <button class="nav-item" data-route="forum" data-feat="forum"><span class="ico">💬</span>论坛</button>
+      <button class="nav-item" data-route="shop" data-feat="shop"><span class="ico">💎</span>商城</button>
+      <button class="nav-item" data-route="changelog"><span class="ico">📜</span>更新日志</button>
+      <button class="nav-item" data-route="admin" id="nav-admin"><span class="ico">🛠</span>管理后台</button>
+    </nav>
+
+    <main class="main" id="main">
+      <!-- 登录 -->
+      <section class="view" id="view-login">
+        <div class="login-wrap"><div class="card login-card">
+          <div class="logo">🌕</div><h1>狼人杀 ONLINE</h1>
+          <p class="muted" id="site-welcome">月夜降临，村庄的谎言即将开始。</p>
+          <div class="tabsbar" style="margin-top:18px">
+            <button id="tab-login" class="on">登录</button><button id="tab-reg">注册</button>
+          </div>
+          <div class="field"><label>昵称</label><input type="text" id="lg-name" maxlength="16"></div>
+          <div class="field"><label>密码</label><input type="password" id="lg-pass"></div>
+          <button class="btn gold" id="btn-auth" style="width:100%">进入村庄</button>
+        </div></div>
+      </section>
+
+      <!-- 大厅 -->
+      <section class="view" id="view-lobby">
+        <div class="page">
+          <div class="page-title">大厅</div>
+          <div class="page-sub" id="lobby-sub">选择一个房间加入，或创建属于你的村庄</div>
+          <div class="card">
+            <div class="row">
+              <button class="btn gold" id="btn-create">创建房间</button>
+              <button class="btn" id="btn-quick">快速开局</button>
+              <div class="grow"></div>
+              <input type="text" id="join-no" placeholder="输入房间号" style="width:140px">
+              <button class="btn" id="btn-join">加入</button>
+            </div>
+          </div>
+          <div class="card"><div class="room-list" id="room-list"><div class="muted">加载中…</div></div></div>
+        </div>
+      </section>
+
+      <!-- 房间 -->
+      <section class="view" id="view-room">
+        <div class="page">
+          <div class="page-title" id="room-title">房间</div>
+          <div class="page-sub" id="room-sub"></div>
+          <div class="card">
+            <div class="row" id="room-actions">
+              <button class="btn gold" id="btn-start">开始对局</button>
+              <button class="btn" id="btn-ready">准备</button>
+              <button class="btn" id="btn-addai">添加 AI</button>
+              <button class="btn" id="btn-spectate">转观战</button>
+              <button class="btn" id="btn-playseat">要参与</button>
+              <button class="btn danger" id="btn-leave">离开房间</button>
+            </div>
+          </div>
+          <div class="card"><div class="seats" id="seats"></div>
+            <div class="muted" id="board-info" style="margin-top:12px"></div></div>
+        </div>
+      </section>
+
+      <!-- 对局 -->
+      <section class="view" id="view-game">
+        <div class="page">
+          <div class="phasebar">
+            <span class="phase-chip" id="g-phase">—</span>
+            <span class="muted" id="g-day"></span>
+            <span class="timer" id="g-timer"></span>
+          </div>
+          <div id="g-winline"></div>
+          <div class="game-grid">
+            <div class="card">
+              <div class="feed" id="g-feed"></div>
+              <div class="actbox" id="g-act"></div>
+            </div>
+            <div>
+              <div class="myrole" id="g-myrole"></div>
+              <div class="seats" id="g-seats" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 好友 -->
+      <section class="view" id="view-friends">
+        <div class="page">
+          <div class="page-title">好友</div>
+          <div class="page-sub">私聊、组队邀请，红点提醒不遮名字</div>
+          <div class="card">
+            <div class="row">
+              <input type="text" id="f-add-name" placeholder="好友昵称" style="width:180px">
+              <button class="btn sm" id="f-add">添加好友</button>
+            </div>
+          </div>
+          <div class="grid c2" style="margin-top:14px">
+            <div class="card" id="friend-list"></div>
+            <div class="card">
+              <div id="chat-with" class="muted">点击左侧好友开始私聊</div>
+              <div class="chatbox" id="chat-box"></div>
+              <div class="row"><input type="text" id="chat-input" class="grow" placeholder="输入消息…"><button class="btn sm gold" id="chat-send">发送</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 排行 -->
+      <section class="view" id="view-rank">
+        <div class="page">
+          <div class="page-title">排行榜</div><div class="page-sub">胜场与胜率之光</div>
+          <div class="card" id="rank-box"></div>
+        </div>
+      </section>
+
+      <!-- 论坛 -->
+      <section class="view" id="view-forum">
+        <div class="page">
+          <div class="page-title">村庄广场</div><div class="page-sub">玩家论坛</div>
+          <div class="card">
+            <div class="row"><input type="text" id="fp-title" class="grow" placeholder="标题"><button class="btn sm gold" id="fp-post">发帖</button></div>
+            <div class="field" style="margin-top:10px"><textarea id="fp-text" placeholder="正文…"></textarea></div>
+          </div>
+          <div class="card" id="forum-list"></div>
+        </div>
+      </section>
+
+      <!-- 商城 -->
+      <section class="view" id="view-shop">
+        <div class="page">
+          <div class="page-title">商城</div><div class="page-sub" id="shop-sub"></div>
+          <div class="grid c3" id="shop-grid"></div>
+        </div>
+      </section>
+
+      <!-- 档案 -->
+      <section class="view" id="view-profile">
+        <div class="page">
+          <div class="page-title">个人档案</div>
+          <div class="card">
+            <div class="row"><span style="font-size:44px" id="pf-ava">🐺</span>
+              <div><div id="pf-name" style="font-weight:800;font-size:var(--fs-lg)"></div>
+              <div class="muted" id="pf-stats"></div></div></div>
+            <div class="field" style="margin-top:14px"><label>头像 Emoji（16px 内居中，不偏移）</label>
+              <div class="row" id="ava-row"></div></div>
+            <button class="btn gold sm" id="pf-save">保存头像</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 更新日志 -->
+      <section class="view" id="view-changelog">
+        <div class="page">
+          <div class="page-title">更新日志</div><div class="page-sub" id="ver-sub"></div>
+          <div class="card" id="log-list"></div>
+        </div>
+      </section>
+
+      <!-- 管理后台 -->
+      <section class="view" id="view-admin">
+        <div class="page">
+          <div class="page-title">管理后台</div><div class="page-sub" id="adm-sub">仅管理员可见</div>
+          <div class="admtabs" id="adm-tabs">
+            <button data-t="ov" class="on">概览</button><button data-t="users">用户</button>
+            <button data-t="feat">功能开关</button><button data-t="disp">显示配置</button>
+            <button data-t="rooms">房间</button><button data-t="bak">备份</button>
+            <button data-t="upd">更新</button><button data-t="plug">插件</button><button data-t="log">日志管理</button>
+          </div>
+          <div class="card" id="adm-pane"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="modal-root"></div>
+<script src="www/js/wolf.js"></script>
+</body>
+</html>

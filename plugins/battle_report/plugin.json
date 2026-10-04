@@ -1,0 +1,6 @@
+{
+  "name": "battle_report",
+  "version": "1.0.0",
+  "desc": "结算战报：每局结束自动在论坛发布战报（胜负、存活、关键事件）",
+  "hooks": ["on_game_over"]
+}

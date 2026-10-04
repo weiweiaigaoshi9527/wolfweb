@@ -1,0 +1,6 @@
+{
+  "name": "llm_speaker",
+  "version": "1.0.0",
+  "desc": "接大模型让 AI 真开口：托管发言改为 LLM 生成（OpenAI 兼容接口），失败自动回退本地拟人台词池",
+  "hooks": ["auto_action"]
+}

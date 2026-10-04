@@ -1,0 +1,6 @@
+{
+  "name": "voice_bridge",
+  "version": "1.0.0",
+  "desc": "语音桥：把发言推送到外部 ASR/TTS 服务（SenseVoice + Kokoro），虚拟主机上通过外链语音服务器实现语音房",
+  "hooks": ["on_game_over", "state_view"]
+}
