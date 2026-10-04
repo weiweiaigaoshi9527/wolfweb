@@ -4,3 +4,8 @@ storage/
 
 # 工具残留
 .trae-html-share-packages/
+
+# 一次性部署/交付产物（不入库；fix_assets.php 内含修复前的旧 wolf.js，重复执行会回退修复）
+fix_assets.php
+fix_wolfjs.php
+wolfweb-www-plugins.zip

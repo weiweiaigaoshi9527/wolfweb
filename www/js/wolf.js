@@ -110,6 +110,8 @@ const WW = {
     this.route();
     window.addEventListener('hashchange', () => this.route());
     $('#btn-theme').onclick = () => this.themeModal();
+    // 左侧导航栏点击绑定（此前只写了 data-route、没绑事件，导致整排导航点了没反应）
+    $$('#nav .nav-item').forEach(b => b.onclick = () => this.go('#' + b.dataset.route));
     $('#btn-logout').onclick = async () => { await this.api('logout'); this.me = null; this.roomNo = ''; this.renderIdentity(); this.go('#login', true); };
   },
   renderIdentity() {
@@ -241,13 +243,18 @@ const WW = {
       return '<div class="fitem ' + cls + '">' + seatNo + esc(e.detail) + '</div>';
     }).join('');
     if (oldTop) feed.scrollTop = feed.scrollHeight;
-    // 座位
-    $('#g-seats').innerHTML = g.seats.map(s =>
+    // 座位（同样只在内容变化时重建，避免每 2s 轮询把点击目标换掉）
+    const seatBox = $('#g-seats');
+    const seatHtml = g.seats.map(s =>
       '<div class="seat gseat' + (s.alive ? '' : ' dead') + (WW.selTarget === s.seat ? ' sel' : '') + '" data-seat="' + s.seat + '">' +
       '<span class="no">' + s.seat + '号</span><div class="face">' + (s.alive ? '🙂' : '💀') + '</div>' +
       '<div class="nm">' + esc(s.name) + (s.isSheriff ? ' 👮' : '') + '</div>' +
       '<div class="st">' + (s.role ? '<span class="tag ' + (s.role.indexOf('狼') >= 0 ? 'red' : 'green') + '">' + esc(s.role) + '</span>' : '<span class="tag">？</span>') + '</div></div>').join('');
-    $$('#g-seats .gseat').forEach(el => el.onclick = () => { WW.selTarget = +el.dataset.seat; WW.renderTargets(g); });
+    if (seatBox.dataset.sig !== seatHtml) {
+      seatBox.dataset.sig = seatHtml;
+      seatBox.innerHTML = seatHtml;
+      $$('#g-seats .gseat').forEach(el => el.onclick = () => { WW.selTarget = +el.dataset.seat; WW.renderTargets(g); });
+    }
     // 我的身份
     const mr = $('#g-myrole');
     if (you.spectate || !g.my) mr.innerHTML = '<span class="muted">👁 观战视角 · 不泄露任何底牌</span>';
@@ -294,7 +301,14 @@ const WW = {
     } else {
       html = '<span class="muted">' + (g.cur ? g.cur + '号正在行动（' + (ActionNames[g.kind] || g.kind) + '）…' : '系统推进中…') + '</span>';
     }
+    // 关键：对局每 2s 轮询一次并会走到这里。内容没变时不要重建 DOM，
+    // 否则用户正在输入的发言框会被清空、待点击的按钮被替换（表现为“下面互动栏点不动 / 打不了字”）。
+    if (box.dataset.sig === html) return;
+    const draft = (($('#act-line') || {}).value) || '';
+    box.dataset.sig = html;
     box.innerHTML = html;
+    const taKeep = $('#act-line');
+    if (taKeep && draft) taKeep.value = draft;
     // 绑定
     box.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
       const d = JSON.parse(b.dataset.act.replace(/&#39;/g, "'"));
