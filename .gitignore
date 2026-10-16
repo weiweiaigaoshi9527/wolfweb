@@ -9,3 +9,4 @@ storage/
 fix_assets.php
 fix_wolfjs.php
 wolfweb-www-plugins.zip
+del_tmp.php
